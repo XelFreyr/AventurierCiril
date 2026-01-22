@@ -9,7 +9,7 @@ class Main
 
      public static void main(String[] args) throws IOException {
         if (args.length != 2) {
-            throw new IOException("More than 2 files added to arguments");
+            throw new IOException("invalid input, 2 files expected");
         }
 
         Adventurer adventurer = new Adventurer();
@@ -23,7 +23,7 @@ class Main
         adventurer.setX(adventurer.getStartingCoordinates()[0]);
         adventurer.setY(adventurer.getStartingCoordinates()[1]);
 
-        adventurer.checkSpawnPoint(
+        adventurer.isSpawnPointValid(
                 forest.getWidth(),
                 forest.getHeight(),
                 forest.getForestLines());
@@ -42,6 +42,6 @@ class Main
             }
         }
 
-        System.out.println("Le personnage doit se trouver en (" + adventurer.getX() + "," + adventurer.getY() + ")");
+        System.out.print("Le personnage doit se trouver en (" + adventurer.getX() + "," + adventurer.getY() + ")");
     }
 }

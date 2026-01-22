@@ -40,14 +40,13 @@ public class Adventurer
         }
     }
 
-    public void checkSpawnPoint(int width, int height, List<String> tilemap) throws IllegalArgumentException{
+    public void isSpawnPointValid(int width, int height, List<String> tilemap) throws IllegalArgumentException{
         if (this.getX() >= width || this.getX() < 0)
             throw new IllegalArgumentException("Adventurer spawns out of bounds");
         if (this.getY() >= height || this.getY() < 0)
             throw new IllegalArgumentException("Adventurer spawns out of bounds");
         if (!this.isTileWalkable(tilemap.get(this.getY()).charAt(this.getX())))
             throw new IllegalArgumentException("Adventurer spawns on a forest tile");
-
     }
 
     public int[] choseNextCoordinates(int[] nextTile, char currentInstruction){

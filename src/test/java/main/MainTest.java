@@ -1,33 +1,94 @@
 package main;
 
-import adventurer.Adventurer;
-import forestMap.ForestMap;
+
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MainTest {
 
     @Test
-    void playerCantSpawnInWall() throws IOException {
-        ForestMap forest = new ForestMap();
-        Adventurer adventurer = new Adventurer();
+    void mainIT1() throws Exception {
+        String mapContent =
+                "###    ######    ###\n" +
+                        "###      ##      ###\n" +
+                        "##     ##  ##     ##\n" +
+                        "#      ##  ##      #\n" +
+                        "##                ##\n" +
+                        "#####          #####\n" +
+                        "###### ##  ##  #####\n" +
+                        " #     ######     # \n" +
+                        "     ########       \n" +
+                        "    ############    \n" +
+                        "    ############    \n" +
+                        "     ########      #\n" +
+                        " #     ######     ##\n" +
+                        "###### ##  ## ######\n" +
+                        "#####          #####\n" +
+                        "##                ##\n" +
+                        "#   ## #    # ##   #\n" +
+                        "##   ##      ##   ##\n" +
+                        "###    #    #    ###\n" +
+                        "###    ######    ###\n";
 
-        adventurer.setX(0);
-        adventurer.setY(0);
+        Path mapFile = Files.createTempFile("carte", ".txt");
+        Files.writeString(mapFile, mapContent, StandardCharsets.UTF_8);
 
-        Path mapFile = Files.createTempFile("map", ".txt");
-        Files.writeString(mapFile, "###\n###\n###\n###", StandardCharsets.UTF_8);
-        List<String> lines = forest.getMap(mapFile.toString());
+        Path instructionsFile = Files.createTempFile("instructions", ".txt");
+        Files.writeString(instructionsFile, "3,0\nSSSSEEEEEENN\n", StandardCharsets.UTF_8);
 
+        String[] args = {mapFile.toString(), instructionsFile.toString()};
 
-        if (!(adventurer.isTileWalkable(forest.getForestLines().get(adventurer.getY()).charAt(adventurer.getX()))))
-            throw new IllegalArgumentException("Adventurer spawns on a forest tile");
+        java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+        System.setOut(new java.io.PrintStream(out));
 
+        Main.main(args);
+        assertEquals("Le personnage doit se trouver en (9,2)", out.toString());
 
     }
+
+    @Test
+    void mainIT2() throws Exception {
+        String mapContent =
+                "###    ######    ###\n" +
+                        "###      ##      ###\n" +
+                        "##     ##  ##     ##\n" +
+                        "#      ##  ##      #\n" +
+                        "##                ##\n" +
+                        "#####          #####\n" +
+                        "###### ##  ##  #####\n" +
+                        " #     ######     # \n" +
+                        "     ########       \n" +
+                        "    ############    \n" +
+                        "    ############    \n" +
+                        "     ########      #\n" +
+                        " #     ######     ##\n" +
+                        "###### ##  ## ######\n" +
+                        "#####          #####\n" +
+                        "##                ##\n" +
+                        "#   ## #    # ##   #\n" +
+                        "##   ##      ##   ##\n" +
+                        "###    #    #    ###\n" +
+                        "###    ######    ###\n";
+
+        Path mapFile = Files.createTempFile("carte", ".txt");
+        Files.writeString(mapFile, mapContent, StandardCharsets.UTF_8);
+
+        Path instructionsFile = Files.createTempFile("instructions", ".txt");
+        Files.writeString(instructionsFile, "6,7\nOONOOOSSO\n", StandardCharsets.UTF_8);
+
+        String[] args = {mapFile.toString(), instructionsFile.toString()};
+
+        java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+        System.setOut(new java.io.PrintStream(out));
+
+        Main.main(args);
+        assertEquals("Le personnage doit se trouver en (1,9)", out.toString());
+
+    }
+
 }

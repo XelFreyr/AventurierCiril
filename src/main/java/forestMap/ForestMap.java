@@ -17,25 +17,36 @@ public class ForestMap {
         if (mapLines.isEmpty()) {
             throw new IOException("Map file is empty: " + mapPath);
         }
-        checkMap(mapLines);
+        isMapFormatValid(mapLines);
+
+        setForestLines(mapLines);
+        setHeight(mapLines.size());
+        setWidth(mapLines.get(0).length());
         return mapLines;
     }
 
-    public void checkMap(List<String> forestLines) throws IllegalArgumentException {
+    public void isMapFormatValid(List<String> forestLines) throws IllegalArgumentException {
         int firstLineLength = forestLines.get(0).length();
         for (String line: forestLines){
-            for (char tile :  line.toCharArray()) {
-                if (!(tile == '#' || tile == ' ')){
-                    throw new IllegalArgumentException("Map has undefined character");
-                }
-            }
-            if (line.length() != firstLineLength) {throw new IllegalArgumentException("Map has uneven width");}
+            isCharacterUndefined(line);
+            isMapLengthEven(line, firstLineLength);
         }
-        setForestLines(forestLines);
-        setHeight(forestLines.size());
-        setWidth(forestLines.get(0).length());
+    }
+    public void isCharacterUndefined(String line) throws IllegalArgumentException {
+        for (char tile :  line.toCharArray()) {
+            if (!(tile == '#' || tile == ' ')){
+                throw new IllegalArgumentException("Map has undefined character");
+            }
+        }
     }
 
+    public void isMapLengthEven(String line, int firstLineLength) throws IllegalArgumentException {
+        for (char tile :  line.toCharArray()) {
+            if (line.length() != firstLineLength) {
+                throw new IllegalArgumentException("Map has uneven width");
+            }
+        }
+    }
     public boolean isTileWithinMap(int[] nextTileCoordinates){
         return nextTileCoordinates[0] >= 0
                 && nextTileCoordinates[0] < this.getWidth()

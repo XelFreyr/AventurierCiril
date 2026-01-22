@@ -16,29 +16,64 @@ public class Adventurer
     private char[] adventurerInstructions;
 
 
-    public void sayHello(){
-        System.out.println("I'm an adventurer");
-        System.out.println("I am at " + this.x + "," + this.y);
-    }
-
     public void getInstructions(String instructionsPath) throws IOException {
         List<String> instructionsLines;
         instructionsLines = Files.readAllLines(Paths.get(instructionsPath), StandardCharsets.UTF_8);
-        if (instructionsLines.isEmpty()) {
-            throw new IllegalArgumentException("Instructions file is empty: " + instructionsPath);
+        if (instructionsLines.size() != 2) {
+            throw new IllegalArgumentException("Instruction files empty or is not coordinate and directions: " + instructionsPath);
         }
 
         try {
-        this.setStartingCoordinates(Arrays.stream(instructionsLines.get(0).split(","))
-                .mapToInt(Integer::parseInt)
-                .toArray());
-        this.setAdventurerInstructions(instructionsLines.get(1).toCharArray());
+            this.setStartingCoordinates(Arrays.stream(instructionsLines.get(0).split(","))
+                    .mapToInt(Integer::parseInt)
+                    .toArray());
         } catch (Exception e) {
-            throw new IllegalArgumentException("Invalid instructions file/format");
+            throw new IllegalArgumentException("Invalid coordinates format");
+        }
+        if (getStartingCoordinates().length != 2) {
+            throw new IllegalArgumentException("Invalid number of coordinates");
+        }
+        try {
+            this.setAdventurerInstructions(instructionsLines.get(1).toCharArray());
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid instructions format");
         }
     }
 
-    public boolean checkTileType(char tile){
+    public void checkSpawnPoint(int width, int height, List<String> tilemap) throws IllegalArgumentException{
+        if (this.getX() >= width || this.getX() < 0)
+            throw new IllegalArgumentException("Adventurer spawns out of bounds");
+        if (this.getY() >= height || this.getY() < 0)
+            throw new IllegalArgumentException("Adventurer spawns out of bounds");
+        if (!this.isTileWalkable(tilemap.get(this.getY()).charAt(this.getX())))
+            throw new IllegalArgumentException("Adventurer spawns on a forest tile");
+
+    }
+
+    public int[] choseNextCoordinates(int[] nextTile, char currentInstruction){
+        switch(currentInstruction){
+            case 'N':
+                nextTile[1]--;
+                break;
+
+            case 'E':
+                nextTile[0]++;
+                break;
+
+            case 'S':
+                nextTile[1]++;
+                break;
+
+            case 'O':
+                nextTile[0]--;
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid direction");
+        }
+        return nextTile;
+    }
+
+    public boolean isTileWalkable(char tile){
         return tile == ' ';
     }
 

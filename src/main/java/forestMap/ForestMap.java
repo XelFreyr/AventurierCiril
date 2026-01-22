@@ -8,7 +8,6 @@ import java.util.List;
 
 public class ForestMap {
 
-    //public List<String> forestLines;
     private List<String> forestLines;
     private int height;
     private int width;
@@ -16,22 +15,36 @@ public class ForestMap {
     public List<String> getMap(String mapPath) throws IOException {
         List<String> mapLines = Files.readAllLines(Paths.get(mapPath), StandardCharsets.UTF_8);
         if (mapLines.isEmpty()) {
-            throw new IllegalArgumentException("Map file is empty: " + mapPath);
+            throw new IOException("Map file is empty: " + mapPath);
         }
         checkMap(mapLines);
         return mapLines;
     }
 
-    public void checkMap(List<String> forestLines) {
+    public void checkMap(List<String> forestLines) throws IllegalArgumentException {
+        int firstLineLength = forestLines.get(0).length();
         for (String line: forestLines){
             for (char tile :  line.toCharArray()) {
                 if (!(tile == '#' || tile == ' ')){
                     throw new IllegalArgumentException("Map has undefined character");
                 }
             }
+            if (line.length() != firstLineLength) {throw new IllegalArgumentException("Map has uneven width");}
         }
+        setForestLines(forestLines);
         setHeight(forestLines.size());
         setWidth(forestLines.get(0).length());
+    }
+
+    public boolean isTileWithinMap(int[] nextTileCoordinates){
+        return nextTileCoordinates[0] >= 0
+                && nextTileCoordinates[0] < this.getWidth()
+                && nextTileCoordinates[1] >= 0
+                && nextTileCoordinates[1] < this.getHeight();
+    }
+
+    public char getTileType(int[] tile){
+        return this.forestLines.get(tile[1]).charAt(tile[0]);
     }
 
     public int getWidth() {
